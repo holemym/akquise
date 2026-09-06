@@ -1,0 +1,23 @@
+{
+  "_comment": "Sender + links used by tools/befund_pages.py and tools/letters.py. Fill the ⚠ fields before batch 1.",
+  "sender_name": "David Mora",
+  "sender_role": "Product & Digital Designer",
+  "studio": "d-vision",
+  "address_lines": ["⚠ Straße Nr.", "⚠ PLZ Wien"],
+  "phone": "+43 660 823 49 05",
+  "email": "mora@d-vision.design",
+  "site": "d-vision.design",
+  "booking_url": "⚠ https://cal.com/… (20-Minuten-Termin)",
+  "befund_base_url": "https://befund-dvision.vercel.app",
+  "helper_name": "⚠ Name der Outreach-Person",
+  "helper_phone": "",
+  "references": {
+    "S1-beratung": ["loutati.at", "Für eine Wiener Steuerberatungskanzlei haben wir die Website neu gebaut und betreuen seither Fachbeiträge und SEO."],
+    "S2-gesundheit": ["jewish-services.vercel.app", "Für einen sensiblen internationalen Dienst haben wir Anfrageweg und Inhalte so strukturiert, dass Menschen in schwierigen Momenten sofort wissen, was zu tun ist."],
+    "S3-gastro": ["Ani Poel Group, Wien", "Für fünf Wiener Lokale haben wir Marke, Karten, Beschilderung und digitale Kampagnen betreut."],
+    "S4-immobilien": ["internes Tool, Hausverwaltung Wien", "Für eine Hausverwaltung haben wir die manuellen Abläufe in ein internes Tool übersetzt: Anfragen, Aufgaben, Dokumente an einem Ort."],
+    "S5-vereine": ["wow-vienna.com", "Für einen Wiener Kulturverein haben wir Marke und Website aufgebaut und betreiben seither den digitalen Auftritt: Programme, Events, Mitgliedschaft."],
+    "S6-studios": ["Ani Poel Group, Wien", "Für fünf Wiener Lokale haben wir Marke, Karten, Beschilderung und digitale Kampagnen betreut."],
+    "S7-bildung-kultur": ["englibee.com", "Für eine Wiener Sprachlehrerin haben wir die Website neu gestaltet und ein internes Tool für Stunden, Schüler und Rechnungen gebaut."]
+  }
+}

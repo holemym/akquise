@@ -1,0 +1,36 @@
+# --- Generated artefacts: regenerate with tools/, never commit ---
+# Large, they churn on every batch, and several embed personal data of third parties.
+# (No trailing comments on pattern lines — git would treat them as part of the pattern.)
+
+# Overpass response cache
+data/raw/
+# raw site-audit facts incl. Impressum snippets
+data/audits.jsonl
+# phone screenshots of prospect websites
+data/shots/
+# generated letters (screen + print)
+data/letters/*.html
+data/letters/*.pdf
+# generated Befund pages, one per prospect
+site/b/
+# run logs and markers
+data/*.log
+data/RUN_DONE
+data/RUN_FAILED
+
+# --- Local noise ---
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+# per-machine pane layout; the other .obsidian files are shared on purpose
+.obsidian/workspace.json
+
+# --- Third-party personal data: NEVER in a public repo ---
+# Business contact details and Impressum names of real people (GDPR).
+# Shared with the outreach person directly, or via a separate private repo.
+data/prospects.csv
+data/prospects_scored.csv
+data/SHORTLIST.md
+data/befund_urls.csv
+data/letters/BATCH.md
