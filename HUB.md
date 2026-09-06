@@ -18,9 +18,10 @@ Public GitHub repo: **https://github.com/holemym/akquise** (branch `main`). Clon
 1. [STRATEGY.md](STRATEGY.md) — thesis, segments, the Befund method, channels + legal, funnel, KPIs
 2. [OFFERS.md](OFFERS.md) — service map with packages, v1 prices, conditions
 3. [HANDBUCH.md](HANDBUCH.md) — German internal handbook for the outreach person (the whole map, how we like offers, rules)
-4. [PIPELINE.md](PIPELINE.md) — how the scraping/audit/scoring works and how to run it
-5. `templates/` — Befund letter, LinkedIn note, call script, proposal skeleton (DE)
-6. `data/` — `prospects.csv` (raw) · `audits.jsonl` (facts) · `prospects_scored.csv` (findings + offer + CRM columns) · `SHORTLIST.md` · `STATS.md`
+4. [TIERING.md](TIERING.md) — **which leads are worth a letter**: validation method, what it caught, tiers A–X and the strategy per tier
+5. [PIPELINE.md](PIPELINE.md) — how the scraping/audit/scoring works and how to run it
+6. `templates/` — Befund letter, LinkedIn note, call script, proposal skeleton (DE)
+7. `data/` — `prospects.csv` (raw) · `audits.jsonl` (facts) · `prospects_scored.csv` (findings + offer + CRM columns) · `TIERS.md` (the working list, A→X) · `SHORTLIST.md` · `STATS.md`
 
 ## Twin rule (EN ↔ DE)
 Every document exists twice: `X.md` (EN) ↔ `X.de.md` (DE); German-native files (HANDBUCH, templates) have `X.en.md` twins. Same headings, same checkboxes, same numbers, same links — only the language differs. **Whoever changes one file changes the twin in the same session.** `python tools/sync_check.py` compares structure, ticked tasks, money/dates and links, and fails on drift; run it before closing a session. `data/` is not duplicated (Befund lines are German by design; STATS/SHORTLIST are generated).
@@ -49,7 +50,8 @@ Every document exists twice: `X.md` (EN) ↔ `X.de.md` (DE); German-native files
 - [x] T2-4 Pilot run on all segments — 2026-09-02: 9,016 harvested, 4,334 sites audited (17 min), STATS.md written; 14 batch-1 findings eyeballed → 3 weak line types demoted to tag-only, 403/429 reclassified as BLOCKED, Impressum names cleaned
 - [ ] T2-5 Second source for the priority segments (WKO Firmen A-Z or Herold) to catch businesses OSM misses; merge on name+postcode
 - [x] T2-6 Mobile screenshot per shortlisted site (`tools/shots.py`, 390 px) → `data/shots/<pid>.png` — batch 1 shot 2026-09-02
-- [ ] T2-7 Manual qualification pass by the helper (checklist in PIPELINE §5) → status `geprüft` — ⚠ proven necessary: batch 1 contains COOP HIMMELB(L)AU flagged "unfinished" (JS site) and the Rechtsanwaltskammer (institution); both must be dropped by hand
+- [x] T2-9 `tools/validate.py` — live liveness/fit/pain re-check, tiers A–X, missed-website probe → `data/validated.csv` + `data/TIERS.md`, written up in [TIERING.md](TIERING.md) — 2026-09-06
+- [ ] T2-7 Manual qualification pass by the helper — now scoped: **work tier C** (52 prospects, ~1 h; 33 need a decision-maker name, 14 need a Google check, 3 have a website after all, 2 need a current domain). Expect 20–25 promotions into B. Checklist in PIPELINE §5, per-prospect instructions in `data/TIERS.md`
 - [ ] T2-8 Google Business Profile check (has profile? photos? reviews? hours?) — add to audit when a Places key exists
 
 ### T3 Documents for outreach
@@ -72,6 +74,7 @@ Every document exists twice: `X.md` (EN) ↔ `X.de.md` (DE); German-native files
 - [ ] T5-4 KPI sheet (sent / replied / calls / proposals / won) per batch and segment
 
 ## Session log
+- 2026-09-06 — **Lead validation ([TIERING.md](TIERING.md)).** All 120 batch-1 candidates re-checked live → A 5 · B 28 · C 52 · D 26 · X 9. Caught: 3 leads wrongly killed because the closure detector read *Insolvenz*/*Liquidation* (services lawyers sell) as an obituary; 3 "no website" letters that would have been false (allmermacke.at, naske.at, rpck.com); 9 institutions/corporates/franchises; 26 healthy firms pulled from the batch. Honest printable batch is now **22 letters**, not 67. Tier A's "no mobile layout" verified on the live sites.
 - 2026-09-03 — Repo made public **as `holemym/akquise`**, data-free: the 5 prospect-data files were untracked and history reset to one commit. The old `akquise-vault` repo could not be flipped safely (its pre-rewrite commits stayed fetchable by SHA even after a force-push), so it was set back to private and a clean repo was created instead. ⚠ David: delete `akquise-vault` in GitHub settings (the API token has no delete scope).
 - 2026-09-02 (night) — Vault published as the private GitHub repo `holemym/akquise-vault` (45 files, EN/DE twins + tools + shortlist/CRM). README twins added with the Obsidian setup. Generated artefacts excluded via `.gitignore`. Open: invite the outreach person as a collaborator.
 - 2026-09-02 (evening) — Decisions D1–D7 taken (delegated). Full pipeline ran end-to-end; findings quality pass; batch-1 material generated: `data/SHORTLIST.md`, `site/b/*.html` (Befund pages), `data/letters/*.pdf` + `BATCH.md`. Open before printing: `config.json` ⚠ fields, helper hand-check, Vercel deploy of `site/`.

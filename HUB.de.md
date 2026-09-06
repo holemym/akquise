@@ -18,9 +18,10 @@ Operatives Gehirn, um Wiener Betriebe zu finden, die Davids Leistungen brauchen,
 1. [STRATEGY.de.md](STRATEGY.de.md) — These, Segmente, die Befund-Methode, Kanäle + Recht, Funnel, Kennzahlen
 2. [OFFERS.de.md](OFFERS.de.md) — Leistungslandkarte mit Paketen, v1-Preisen, Bedingungen
 3. [HANDBUCH.md](HANDBUCH.md) — internes Handbuch für die Outreach-Person (die ganze Landkarte, wie wir Angebote mögen, Regeln)
-4. [PIPELINE.de.md](PIPELINE.de.md) — wie Scraping/Audit/Scoring funktionieren und wie man sie startet
-5. `templates/` — Befund-Brief, LinkedIn-Notiz, Telefon-Leitfaden, Angebots-Skelett (DE, mit EN-Zwillingen)
-6. `data/` — `prospects.csv` (roh) · `audits.jsonl` (Fakten) · `prospects_scored.csv` (Befunde + Angebot + CRM-Spalten) · `SHORTLIST.md` · `STATS.md`
+4. [TIERING.de.md](TIERING.de.md) — **welche Leads einen Brief wert sind**: Prüfmethode, was sie gefunden hat, Tiers A–X und das Vorgehen je Tier
+5. [PIPELINE.de.md](PIPELINE.de.md) — wie Scraping/Audit/Scoring funktionieren und wie man sie startet
+6. `templates/` — Befund-Brief, LinkedIn-Notiz, Telefon-Leitfaden, Angebots-Skelett (DE, mit EN-Zwillingen)
+7. `data/` — `prospects.csv` (roh) · `audits.jsonl` (Fakten) · `prospects_scored.csv` (Befunde + Angebot + CRM-Spalten) · `TIERS.md` (die Arbeitsliste, A→X) · `SHORTLIST.md` · `STATS.md`
 
 ## Zwillingsregel (EN ↔ DE)
 Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachige Originale (HANDBUCH, Vorlagen) haben `X.en.md`-Zwillinge. Gleiche Überschriften, gleiche Checkboxen, gleiche Zahlen, gleiche Links — nur die Sprache unterscheidet sich. **Wer eine Datei ändert, ändert den Zwilling in derselben Session.** `python tools/sync_check.py` vergleicht Struktur, abgehakte Aufgaben, Geld/Daten und Links und schlägt bei Abweichung fehl; vor dem Schließen einer Session ausführen. `data/` wird nicht dupliziert (Befund-Zeilen sind absichtlich deutsch; STATS/SHORTLIST werden generiert).
@@ -49,7 +50,8 @@ Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachi
 - [x] T2-4 Pilotlauf über alle Segmente — 2026-09-02: 9.016 geerntet, 4.334 Seiten geprüft (17 Min.), STATS.md geschrieben; 14 Batch-1-Befunde gesichtet → 3 schwache Zeilentypen auf Tag-only zurückgestuft, 403/429 als BLOCKED umklassifiziert, Impressum-Namen bereinigt
 - [ ] T2-5 Zweite Quelle für die Prioritätssegmente (WKO Firmen A-Z oder Herold), zusammenführen über Name+PLZ
 - [x] T2-6 Handy-Screenshot je Shortlist-Seite (`tools/shots.py`, 390 px) → `data/shots/<pid>.png` — Batch 1 am 2026-09-02 fotografiert
-- [ ] T2-7 Manuelle Qualifikation durch die Hilfskraft (Checkliste in PIPELINE §5) → Status `geprüft` — ⚠ nachweislich nötig: Batch 1 enthält COOP HIMMELB(L)AU als „unfertig“ markiert (JS-Seite) und die Rechtsanwaltskammer (Institution); beide müssen von Hand raus
+- [x] T2-9 `tools/validate.py` — Live-Prüfung auf Lebenszeichen/Eignung/Schmerz, Tiers A–X, Suche nach übersehenen Websites → `data/validated.csv` + `data/TIERS.md`, ausgewertet in [TIERING.de.md](TIERING.de.md) — 2026-09-06
+- [ ] T2-7 Manuelle Qualifikation durch die Hilfskraft — jetzt konkret: **Tier C abarbeiten** (52 Prospects, ~1 Std.; 33 brauchen einen Entscheidernamen, 14 eine Google-Prüfung, 3 haben doch eine Website, 2 brauchen die aktuelle Domain). Erwartung: 20–25 Aufstufungen nach B. Checkliste in PIPELINE §5, Anweisungen je Prospect in `data/TIERS.md`
 - [ ] T2-8 Google-Unternehmensprofil prüfen (Profil? Fotos? Bewertungen? Öffnungszeiten?) — ins Audit, sobald ein Places-Key existiert
 
 ### T3 Dokumente für den Outreach
@@ -72,6 +74,7 @@ Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachi
 - [ ] T5-4 Kennzahlen-Blatt (gesendet / geantwortet / Gespräche / Angebote / gewonnen) je Batch und Segment
 
 ## Session-Log
+- 2026-09-06 — **Lead-Prüfung ([TIERING.de.md](TIERING.de.md)).** Alle 120 Batch-1-Kandidaten live nachgeprüft → A 5 · B 28 · C 52 · D 26 · X 9. Gefunden: 3 Leads fälschlich aussortiert, weil die Schließungserkennung *Insolvenz*/*Liquidation* (Leistungen von Anwälten) als Todesanzeige las; 3 „keine Website“-Briefe, die falsch gewesen wären (allmermacke.at, naske.at, rpck.com); 9 Institutionen/Konzerne/Franchises; 26 gesunde Büros aus der Serie genommen. Die ehrlich druckbare Serie ist jetzt **22 Briefe**, nicht 67. Tier As „kein mobiles Layout“ auf den echten Seiten bestätigt.
 - 2026-09-03 — Repo **als `holemym/akquise`** öffentlich gemacht, ohne Daten: die 5 Dateien mit Kontaktdaten wurden aus der Versionierung genommen und die Historie auf einen Commit zurückgesetzt. Das alte `akquise-vault` ließ sich nicht sicher umstellen (seine Commits vor dem Rewrite blieben trotz Force-Push per SHA abrufbar), daher wurde es wieder auf privat gesetzt und ein sauberes Repo angelegt. ⚠ David: `akquise-vault` in den GitHub-Einstellungen löschen (das API-Token hat keine Delete-Berechtigung).
 - 2026-09-02 (nachts) — Vault als privates GitHub-Repo `holemym/akquise-vault` veröffentlicht (45 Dateien, EN/DE-Zwillinge + Tools + Shortlist/CRM). README-Zwillinge mit der Obsidian-Einrichtung ergänzt. Erzeugte Artefakte über `.gitignore` ausgeschlossen. Offen: Outreach-Person als Mitarbeiter einladen.
 - 2026-09-02 (abends) — Entscheidungen D1–D7 getroffen (delegiert). Pipeline komplett durchgelaufen; Qualitätsdurchgang der Befunde; Batch-1-Material erzeugt: `data/SHORTLIST.md`, `site/b/*.html` (Befund-Seiten), `data/letters/*.pdf` + `BATCH.md`. Offen vor dem Druck: ⚠-Felder in `config.json`, Handprüfung durch die Hilfskraft, Vercel-Deploy von `site/`.
