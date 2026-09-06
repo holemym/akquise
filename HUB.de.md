@@ -8,7 +8,7 @@ Operatives Gehirn, um Wiener Betriebe zu finden, die Davids Leistungen brauchen,
 **Angelegt:** 2026-09-02 · **Status:** 🟢 Entscheidungen getroffen, Pipeline läuft durchgehend (Ernte → Audit → Score → Screenshots → Befund-Seiten → Briefe); Batch 1 wartet auf `config.json` (Adresse, Buchungslink, Name der Hilfskraft)
 
 ## Repo (wie die Outreach-Person an dieses Vault kommt)
-Öffentliches GitHub-Repo: **https://github.com/holemym/akquise-vault** (Branch `main`). Klonen oder herunterladen, dann Obsidian → *Ordner als Vault öffnen*. Einrichtung und Zwillingsregel stehen in [README.de.md](README.de.md).
+Öffentliches GitHub-Repo: **https://github.com/holemym/akquise** (Branch `main`). Klonen oder herunterladen, dann Obsidian → *Ordner als Vault öffnen*. Einrichtung und Zwillingsregel stehen in [README.de.md](README.de.md).
 
 **Die Methode ist öffentlich, die Daten sind es nicht.** Keine Kontaktdaten liegen in git — weder CRM noch Shortlist, Briefe, Screenshots oder Audit-Dump. David schickt die aktuelle Serie direkt an die Outreach-Person; siehe [data/README.md](data/README.md).
 
@@ -72,6 +72,7 @@ Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachi
 - [ ] T5-4 Kennzahlen-Blatt (gesendet / geantwortet / Gespräche / Angebote / gewonnen) je Batch und Segment
 
 ## Session-Log
+- 2026-09-03 — Repo **als `holemym/akquise`** öffentlich gemacht, ohne Daten: die 5 Dateien mit Kontaktdaten wurden aus der Versionierung genommen und die Historie auf einen Commit zurückgesetzt. Das alte `akquise-vault` ließ sich nicht sicher umstellen (seine Commits vor dem Rewrite blieben trotz Force-Push per SHA abrufbar), daher wurde es wieder auf privat gesetzt und ein sauberes Repo angelegt. ⚠ David: `akquise-vault` in den GitHub-Einstellungen löschen (das API-Token hat keine Delete-Berechtigung).
 - 2026-09-02 (nachts) — Vault als privates GitHub-Repo `holemym/akquise-vault` veröffentlicht (45 Dateien, EN/DE-Zwillinge + Tools + Shortlist/CRM). README-Zwillinge mit der Obsidian-Einrichtung ergänzt. Erzeugte Artefakte über `.gitignore` ausgeschlossen. Offen: Outreach-Person als Mitarbeiter einladen.
 - 2026-09-02 (abends) — Entscheidungen D1–D7 getroffen (delegiert). Pipeline komplett durchgelaufen; Qualitätsdurchgang der Befunde; Batch-1-Material erzeugt: `data/SHORTLIST.md`, `site/b/*.html` (Befund-Seiten), `data/letters/*.pdf` + `BATCH.md`. Offen vor dem Druck: ⚠-Felder in `config.json`, Handprüfung durch die Hilfskraft, Vercel-Deploy von `site/`.
 - 2026-09-02 (später) — Vault zweisprachig gemacht: jedes Dokument hat einen EN/DE-Zwilling, `tools/sync_check.py` besteht 10/10. Ernte mit der Area-ID-Abfrage neu gestartet (Overpass-Spiegel liefen bei der Namenssuche in Timeouts); der abgekoppelte Runner `tools/run_all.py` prüft + bewertet, sobald das CSV da ist.

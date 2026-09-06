@@ -8,7 +8,7 @@ Operations brain for finding Viennese businesses that need David's services, dia
 **Created:** 2026-09-02 · **Status:** 🟢 decisions taken, pipeline running end-to-end (harvest → audit → score → shots → Befund pages → letters); batch 1 waits on `config.json` (address, booking link, helper name)
 
 ## Repo (how the outreach person gets this vault)
-Public GitHub repo: **https://github.com/holemym/akquise-vault** (branch `main`). Clone or download it, then Obsidian → *Open folder as vault*. Setup and the twin rule are in [README.md](README.md).
+Public GitHub repo: **https://github.com/holemym/akquise** (branch `main`). Clone or download it, then Obsidian → *Open folder as vault*. Setup and the twin rule are in [README.md](README.md).
 
 **The method is public, the data is not.** No prospect data is in git — not the CRM, not the shortlist, not the letters, screenshots or audit dump. David sends the current batch to the outreach person directly; see [data/README.md](data/README.md).
 
@@ -72,6 +72,7 @@ Every document exists twice: `X.md` (EN) ↔ `X.de.md` (DE); German-native files
 - [ ] T5-4 KPI sheet (sent / replied / calls / proposals / won) per batch and segment
 
 ## Session log
+- 2026-09-03 — Repo made public **as `holemym/akquise`**, data-free: the 5 prospect-data files were untracked and history reset to one commit. The old `akquise-vault` repo could not be flipped safely (its pre-rewrite commits stayed fetchable by SHA even after a force-push), so it was set back to private and a clean repo was created instead. ⚠ David: delete `akquise-vault` in GitHub settings (the API token has no delete scope).
 - 2026-09-02 (night) — Vault published as the private GitHub repo `holemym/akquise-vault` (45 files, EN/DE twins + tools + shortlist/CRM). README twins added with the Obsidian setup. Generated artefacts excluded via `.gitignore`. Open: invite the outreach person as a collaborator.
 - 2026-09-02 (evening) — Decisions D1–D7 taken (delegated). Full pipeline ran end-to-end; findings quality pass; batch-1 material generated: `data/SHORTLIST.md`, `site/b/*.html` (Befund pages), `data/letters/*.pdf` + `BATCH.md`. Open before printing: `config.json` ⚠ fields, helper hand-check, Vercel deploy of `site/`.
 - 2026-09-02 (later) — Vault made bilingual: every doc has an EN/DE twin, `tools/sync_check.py` passes 10/10. Harvest restarted with the area-id query (Overpass mirrors kept timing out on the name lookup); detached runner `tools/run_all.py` audits + scores as soon as the CSV lands.
