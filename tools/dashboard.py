@@ -22,21 +22,26 @@ SECRET_FILE = LEADS / "_dash_secret.txt"
 if not SECRET_FILE.exists(): SECRET_FILE.write_text("k-" + secrets.token_hex(6), encoding="utf-8")
 SEG = SECRET_FILE.read_text(encoding="utf-8").strip()
 BASE = OUT / SEG
+# Every internal href is root-absolute. A relative href breaks the moment the current URL is a
+# clean-url "directory" page served without a trailing slash (e.g. /k-xxx or /k-xxx/lukanec) —
+# the browser then drops one path segment too many when resolving it (proven 2026-09-08: every
+# link on the overview and on each lead's own index page pointed one directory too high).
+ABS = f"/{SEG}"
 DATE = time.strftime("%d.%m.%Y")
 
 def esc(s): return html.escape(str(s or ""))
 MDMAP = {"OFFERS.md": "angebote.html", "OFFERS.de.md": "angebote.html", "HANDBUCH.md": "handbuch.html", "HANDBUCH.en.md": "handbuch.html",
          "PITCH-5.md": "verkaufsmappe.html", "TIERS.md": "tiers.html", "LEADS.md": "leads.html"}
 REPO = "https://github.com/holemym/akquise/blob/main/"
-def md(text, depth=0):
+def md(text):
     h = markdown.markdown(text, extensions=["tables", "fenced_code", "sane_lists"])
     h = h.replace("<table>", '<div class="tw"><table>').replace("</table>", "</table></div>")
     def link(m):
         href = m.group(1); name = href.split("/")[-1]
         if href.startswith(("http", "mailto:", "#")): return m.group(0)
-        if name in MDMAP: return f'href="{"../" * depth}{MDMAP[name]}"'
+        if name in MDMAP: return f'href="{ABS}/{MDMAP[name]}"'
         lm = re.match(r"(?:\.\./)*leads/([^/]+)/(sources\.md|lead\.json|DOSSIER\.md|pitch\.html)$", href)
-        if lm: return f'href="{"../" * depth}{lm.group(1)}/{ {"sources.md": "quellen.html", "lead.json": "dossier.html", "DOSSIER.md": "dossier.html", "pitch.html": "deck.html"}[lm.group(2)] }"'
+        if lm: return f'href="{ABS}/{lm.group(1)}/{ {"sources.md": "quellen.html", "lead.json": "dossier.html", "DOSSIER.md": "dossier.html", "pitch.html": "deck.html"}[lm.group(2)] }"'
         if href.rstrip("/").endswith("templates"): return f'href="{REPO}templates"'
         if name.endswith(".md"): return f'href="{REPO}{href.lstrip("./").replace("../", "")}"'
         return m.group(0)
@@ -81,11 +86,10 @@ document.querySelectorAll('.check input').forEach((c,i)=>{const k=location.pathn
 const l=c.closest('label');l.classList.toggle('done',c.checked);c.addEventListener('change',()=>{try{localStorage.setItem(k,c.checked?'1':'0')}catch(e){}l.classList.toggle('done',c.checked)})});
 """
 
-def page(title, body, depth=1, nav_extra=""):
-    up = "../" * depth
+def page(title, body, nav_extra=""):
     return f"""<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
 <title>{esc(title)} · Akquise</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>{CSS}</style></head>
-<body><div class="top"><div class="in"><b>Akquise</b><a href="{up}index.html">Übersicht</a><a href="{up}verkaufsmappe.html">Verkaufsmappe</a><a href="{up}handbuch.html">Handbuch</a><a href="{up}angebote.html">Angebote</a><a href="{up}tiers.html">Tiers</a>{nav_extra}<span class="sp"></span><span style="color:var(--faint)">Stand {DATE} · intern</span></div></div>
+<body><div class="top"><div class="in"><b>Akquise</b><a href="{ABS}/index.html">Übersicht</a><a href="{ABS}/verkaufsmappe.html">Verkaufsmappe</a><a href="{ABS}/handbuch.html">Handbuch</a><a href="{ABS}/angebote.html">Angebote</a><a href="{ABS}/tiers.html">Tiers</a>{nav_extra}<span class="sp"></span><span style="color:var(--faint)">Stand {DATE} · intern</span></div></div>
 <div class="wrap">{body}</div><script>{JS}</script></body></html>"""
 
 def webp(src, dst, maxw=900):
@@ -109,14 +113,16 @@ def lead_page(slug, L, folder, status):
         if src.exists(): shutil.copy(src, d / dst); has[dst] = True
     bef = list((ROOT / "site" / "b").glob(f"*-{pid[-4:].lower()}.html"))
     if bef: shutil.copy(bef[0], d / "befund.html"); has["befund.html"] = True
-    doss = md((folder / "DOSSIER.md").read_text(encoding="utf-8"), depth=1); doss = re.sub(r'(shots/[^"\s)]+)\.png', r"\1.webp", doss)
-    (d / "dossier.html").write_text(page(f"Dossier · {L['name']}", f'<div class="prose">{doss}</div>', depth=1, nav_extra=f'<a href="index.html">← {esc(L["name"])}</a>'), encoding="utf-8")
-    srcs = md((folder / "sources.md").read_text(encoding="utf-8"), depth=1) if (folder / "sources.md").exists() else ""
-    (d / "quellen.html").write_text(page(f"Quellen · {L['name']}", f'<div class="prose">{srcs}</div>', depth=1, nav_extra=f'<a href="index.html">← {esc(L["name"])}</a>'), encoding="utf-8")
+    doss = md((folder / "DOSSIER.md").read_text(encoding="utf-8"))
+    doss = re.sub(r'shots/([^"\s)]+)\.png', lambda m: f"{ABS}/{slug}/shots/{m.group(1)}.webp", doss)
+    back = f'<a href="{ABS}/{slug}/index.html">← {esc(L["name"])}</a>'
+    (d / "dossier.html").write_text(page(f"Dossier · {L['name']}", f'<div class="prose">{doss}</div>', nav_extra=back), encoding="utf-8")
+    srcs = md((folder / "sources.md").read_text(encoding="utf-8")) if (folder / "sources.md").exists() else ""
+    (d / "quellen.html").write_text(page(f"Quellen · {L['name']}", f'<div class="prose">{srcs}</div>', nav_extra=back), encoding="utf-8")
     c = L["contact"]; O = L["offer"]; lh = L.get("lighthouse") or {}
-    def shot(rel): return f"shots/{pathlib.Path(rel).stem}.webp" if rel and (d / "shots" / (pathlib.Path(rel).stem + ".webp")).exists() else ""
+    def shot(rel): return f"{ABS}/{slug}/shots/{pathlib.Path(rel).stem}.webp" if rel and (d / "shots" / (pathlib.Path(rel).stem + ".webp")).exists() else ""
     finds = "".join(f'<div class="find">{f"<a href=\"{shot(f.get('shot'))}\"><img src=\"{shot(f.get('shot'))}\" alt=\"\"></a>" if shot(f.get("shot")) else "<div></div>"}<div><span class="chip {esc(f["severity"])}">{esc(f["id"])} · {esc(f["severity"])}</span> <h3 style="display:inline;margin-left:8px">{esc(f["title"])}</h3><dl><dt>Beleg</dt><dd>{esc(f["evidence"])}</dd><dt>Folge</dt><dd>{esc(f["consequence"])}</dd><dt>Was wir tun</dt><dd>{esc(f["fix"])}</dd></dl></div></div>' for f in L["findings"])
-    phones = "".join(f'<figure><a href="shots/{n}.webp"><img src="shots/{n}.webp" alt=""></a><figcaption>{cap}</figcaption></figure>' for n, cap in (("m390-vp1", "Bildschirm 1 (mit Banner)"), ("m390-vp2", "Bildschirm 2"), ("m390-vp3", "Bildschirm 3")) if (d / "shots" / f"{n}.webp").exists())
+    phones = "".join(f'<figure><a href="{ABS}/{slug}/shots/{n}.webp"><img src="{ABS}/{slug}/shots/{n}.webp" alt=""></a><figcaption>{cap}</figcaption></figure>' for n, cap in (("m390-vp1", "Bildschirm 1 (mit Banner)"), ("m390-vp2", "Bildschirm 2"), ("m390-vp3", "Bildschirm 3")) if (d / "shots" / f"{n}.webp").exists())
     score = "".join(f'<div class="r"><span>{esc(s["area"])}</span><span class="bar"><i style="width:{int(s["score"])*10}%"></i></span><span class="n">{int(s["score"])}</span><span class="why">{esc(s["why"])}</span></div>' for s in L["scorecard"])
     lhb = f'<div class="lh"><div><b>{esc(lh.get("performance","–"))}</b><span>Performance</span></div><div><b>{esc(lh.get("seo","–"))}</b><span>SEO</span></div><div><b>{esc(lh.get("accessibility","–"))}</b><span>Barrierefreiheit</span></div><div><b>{esc(lh.get("lcp","–"))}</b><span>LCP (Grenze 2,5 s)</span></div></div><p class="note">{esc(lh.get("source",""))}</p>' if lh else '<p class="note">Kein Lighthouse-Wert (Seite nicht direkt messbar).</p>'
     comps = "".join(f'<div>{f"<img src=\"{shot(x.get('shot'))}\" alt=\"\">" if shot(x.get("shot")) else ""}<h3 style="margin-top:8px">{esc(x["name"])}</h3><div class="d">{esc(x.get("district",""))} · <a href="{esc(x.get("website",""))}" rel="noopener">{esc(re.sub(r"^https?://(www\\.)?","",x.get("website","")).rstrip("/"))}</a></div><p>{esc(x["what_their_site_does"])}</p></div>' for x in L["competitors"])
@@ -128,7 +134,7 @@ def lead_page(slug, L, folder, status):
     oq = "".join(f"<li>{esc(q)}</li>" for q in L["open_questions"])
     body = f"""<p><span class="chip">{esc(status)}</span> <span class="chip">{esc(L['category_label'])}</span> <span class="chip">{esc(L['district'])}</span> <span class="chip">{esc(O['lead'])} {esc(O['lead_price'])}</span></p>
 <h1 style="margin-top:14px">{esc(L['name'])}<small>{esc(L['one_liner'])}</small></h1>
-<h2>Dateien</h2><div class="files"><a href="deck.html">Pitch-Deck</a><a href="dossier.html">Dossier</a><a href="brief.pdf" class="{'' if has.get('brief.pdf') else 'off'}">Brief (PDF)</a><a href="befund.html" class="{'' if has.get('befund.html') else 'off'}">Befund-Seite (QR-Ziel)</a><a href="quellen.html" class="sec">Quellen</a><a href="{esc(L['website'])}" class="sec" rel="noopener">Website des Betriebs ↗</a></div>
+<h2>Dateien</h2><div class="files"><a href="{ABS}/{slug}/deck.html">Pitch-Deck</a><a href="{ABS}/{slug}/dossier.html">Dossier</a><a href="{ABS}/{slug}/brief.pdf" class="{'' if has.get('brief.pdf') else 'off'}">Brief (PDF)</a><a href="{ABS}/{slug}/befund.html" class="{'' if has.get('befund.html') else 'off'}">Befund-Seite (QR-Ziel)</a><a href="{ABS}/{slug}/quellen.html" class="sec">Quellen</a><a href="{esc(L['website'])}" class="sec" rel="noopener">Website des Betriebs ↗</a></div>
 <div class="row" style="margin-top:28px"><div class="card"><h3>Kontakt</h3><dl class="kv" style="margin-top:10px"><dt>Person</dt><dd>{esc(c.get('person') or '—')}</dd><dt>Rolle</dt><dd>{esc(c.get('role') or '—')}</dd><dt>Adresse</dt><dd>{esc(c.get('address') or '—')}</dd><dt>Telefon</dt><dd>{esc(c.get('phone') or '—')} <span class="src">(nur für Rückruf nach Antwort)</span></dd><dt>E-Mail</dt><dd>{esc(c.get('email') or '—')} <span class="src">(nie kalt)</span></dd><dt>Website</dt><dd><a href="{esc(L['website'])}" rel="noopener">{esc(L['website'])}</a></dd></dl></div>
 <div class="card"><h3>Angebot</h3><dl class="kv" style="margin-top:10px"><dt>Hauptangebot</dt><dd><b>{esc(O['lead'])}</b> · {esc(O['lead_price'])} · {esc(O['lead_duration'])}</dd><dt>Warum</dt><dd>{esc(O['why_this_one'])}</dd><dt>Zweiter Akt</dt><dd>{esc(O.get('second') or '—')}<br><span class="src">{esc(O.get('second_why',''))}</span></dd><dt>Realistisch</dt><dd>{esc(O.get('realistic_total',''))}</dd></dl></div></div>
 <h2>Vor dem Kontakt — Checkliste</h2><div class="card check">{pre}</div><p class="note">Häkchen werden nur in diesem Browser gespeichert. Der Status im CRM (`prospects_scored.csv`) bleibt die Wahrheit.</p>
@@ -143,7 +149,7 @@ def lead_page(slug, L, folder, status):
 <h2>Einwände</h2><div>{obj}</div>
 <h2>Offen (°)</h2><ul style="padding-left:18px">{oq}</ul>
 <h2>Referenz im Gespräch</h2><div class="card">{''.join(f'<p><b>{esc(r["name"])}</b> — {esc(r["line"])}</p>' for r in L['references'])}</div>"""
-    (d / "index.html").write_text(page(L["name"], body, depth=1), encoding="utf-8")
+    (d / "index.html").write_text(page(L["name"], body), encoding="utf-8")
     return has
 
 def build():
@@ -154,7 +160,7 @@ def build():
         f = LEADS / s / "lead.json"
         if not f.exists(): continue
         L = json.load(open(f, encoding="utf-8")); has = lead_page(s, L, LEADS / s, st.get(FIVE[s]["pid"], "neu"))
-        rows.append(f'<tr><td class="n">{i}</td><td><a href="{s}/index.html">{esc(L["name"])}</a><br><span class="hook">{esc(L["one_liner"])}</span></td><td>{esc(L["category_label"])}<br><span class="hook">{esc(L["district"])}</span></td><td><b>{esc(L["offer"]["lead"])}</b> {esc(L["offer"]["lead_price"])}<br><span class="hook">→ {esc(L["offer"].get("second",""))}</span></td><td><span class="chip">{esc(st.get(FIVE[s]["pid"], "neu"))}</span></td><td class="files"><a href="{s}/deck.html" class="sec">Deck</a><a href="{s}/dossier.html" class="sec">Dossier</a><a href="{s}/brief.pdf" class="sec {"" if has.get("brief.pdf") else "off"}">Brief</a></td></tr>')
+        rows.append(f'<tr><td class="n">{i}</td><td><a href="{ABS}/{s}/index.html">{esc(L["name"])}</a><br><span class="hook">{esc(L["one_liner"])}</span></td><td>{esc(L["category_label"])}<br><span class="hook">{esc(L["district"])}</span></td><td><b>{esc(L["offer"]["lead"])}</b> {esc(L["offer"]["lead_price"])}<br><span class="hook">→ {esc(L["offer"].get("second",""))}</span></td><td><span class="chip">{esc(st.get(FIVE[s]["pid"], "neu"))}</span></td><td class="files"><a href="{ABS}/{s}/deck.html" class="sec">Deck</a><a href="{ABS}/{s}/dossier.html" class="sec">Dossier</a><a href="{ABS}/{s}/brief.pdf" class="sec {"" if has.get("brief.pdf") else "off"}">Brief</a></td></tr>')
     warn = [k for k, v in CFG.items() if isinstance(v, str) and v.startswith("⚠")] + [k for k, v in CFG.items() if isinstance(v, list) and any(str(x).startswith("⚠") for x in v)]
     wb = f'<div class="warn-box"><b>Noch offen in config.json, bevor Briefe rausgehen:</b> {esc(", ".join(warn))}. Dazu: Befund-Seiten deployen (QR-Ziel).</div>' if warn else ""
     body = f"""<h1>Die ersten fünf<small>Verkaufsmappe, Dossiers, Decks und Belege je Betrieb · Reihenfolge = Kontaktreihenfolge</small></h1>
@@ -162,14 +168,21 @@ def build():
 <div class="tw" style="margin-top:24px"><table class="ov"><tr><th></th><th>Betrieb</th><th>Kategorie</th><th>Angebot</th><th>Status</th><th>Dateien</th></tr>{''.join(rows)}</table></div>
 <h2>Regeln, kurz</h2><div class="card"><ol style="padding-left:18px"><li>Jeden Befund selbst am Handy prüfen; stimmt er nicht, streichen.</li><li>Brief, Vorbeigehen, einzelne LinkedIn-Notiz. Kein Kaltanruf, keine Kalt-E-Mail, kein Kontaktformular (§ 174 TKG).</li><li>Preisspannen nennen, nie Fixpreise. Ziel jedes Kontakts: 20 Minuten mit David.</li><li>Alles, was zurückkommt, ins CRM (`status/kanal/kontaktiert_am/antwort/notiz`) und in INBOX.</li></ol></div>
 <h2>Dokumente</h2><div class="files"><a href="verkaufsmappe.html">Verkaufsmappe (PITCH-5)</a><a href="handbuch.html">Handbuch</a><a href="angebote.html">Angebote v1</a><a href="tiers.html">Tiers A–X</a><a href="leads.html" class="sec">Link-Index</a></div>"""
-    (BASE / "index.html").write_text(page("Übersicht", body, depth=0), encoding="utf-8")
+    (BASE / "index.html").write_text(page("Übersicht", body), encoding="utf-8")
     for name, src in (("verkaufsmappe", DATA / "PITCH-5.md"), ("handbuch", ROOT / "HANDBUCH.md"), ("angebote", ROOT / "OFFERS.de.md"), ("tiers", DATA / "TIERS.md"), ("leads", DATA / "LEADS.md")):
         if src.exists():
-            h = md(src.read_text(encoding="utf-8")); h = re.sub(r'href="(\.\./)+([^"]+)"', r'href="\2"', h); h = re.sub(r'href="leads/([^/"]+)/DOSSIER\.md"', r'href="\1/dossier.html"', h); h = re.sub(r'href="leads/([^/"]+)/pitch\.html"', r'href="\1/deck.html"', h)
-            (BASE / f"{name}.html").write_text(page(name.capitalize(), f'<div class="prose">{h}</div>', depth=0), encoding="utf-8")
+            h = md(src.read_text(encoding="utf-8"))
+            (BASE / f"{name}.html").write_text(page(name.capitalize(), f'<div class="prose">{h}</div>'), encoding="utf-8")
     (OUT / "index.html").write_text('<!DOCTYPE html><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>·</title><body style="background:#faf9f6"></body>', encoding="utf-8")
     (OUT / "robots.txt").write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")
     (OUT / "vercel.json").write_text(json.dumps({"cleanUrls": True, "trailingSlash": False, "headers": [{"source": "/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive"}, {"key": "Cache-Control", "value": "private, max-age=0, must-revalidate"}]}]}, indent=1), encoding="utf-8")
+    # Restore the Vercel project link every build: build() rmtree's OUT first, which deletes
+    # dash/.vercel/ too — without this, the next `vercel deploy` silently creates a brand-new,
+    # differently-named project instead of updating akquise-dash (happened 2026-09-08).
+    link = ROOT / ".vercel-project.json"
+    if link.exists():
+        (OUT / ".vercel").mkdir(exist_ok=True)
+        shutil.copy(link, OUT / ".vercel" / "project.json")
     n = sum(1 for _ in OUT.rglob("*") if _.is_file()); size = sum(p.stat().st_size for p in OUT.rglob("*") if p.is_file()) // 1024 // 1024
     print(f"dash/ built: {n} files, {size} MB · entry: /{SEG}/index.html")
 
