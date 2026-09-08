@@ -4,7 +4,7 @@
 
 Operatives Gehirn, um Wiener Betriebe zu finden, die Davids Leistungen brauchen, ihren konkreten digitalen Schmerz zu diagnostizieren und ihnen spezifische Angebote zu schicken. Diesen Ordner als Obsidian-Vault öffnen; diese Notiz ist die Startseite. Claude arbeitet direkt in diesen Dateien (hakt Aufgaben ab, führt das Session-Log). Konventionen wie in [../BOARD.md](../BOARD.md).
 
-**Verantwortlich:** David (Design, Angebote, Umsetzung) · **Outreach:** deutschsprachige Hilfskraft (Name folgt) · **Studio-Identität:** d-vision.design (bestätigen)
+**Verantwortlich:** David (Design, Angebote, Umsetzung) · **Outreach:** Zeraq Popal · **Studio-Identität:** d-vision.design (bestätigen)
 **Angelegt:** 2026-09-02 · **Status:** 🟢 Entscheidungen getroffen, Pipeline läuft durchgehend (Ernte → Audit → Score → Screenshots → Befund-Seiten → Briefe); Batch 1 wartet auf `config.json` (Adresse, Buchungslink, Name der Hilfskraft)
 
 ## Repo (wie die Outreach-Person an dieses Vault kommt)
@@ -31,7 +31,7 @@ Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachi
 - [x] D2 **Kanäle = Brief + Vorbeigehen + einzelne LinkedIn-Notizen.** Keine Kalt-E-Mails, keine Kaltanrufe, und **auch keine Kontaktformular-Nachrichten** (das rechtliche Risiko trifft genau das Reputationssegment, das wir am meisten wollen). E-Mail/Telefon erst nach einer Antwort, Einwilligung mit Datum protokolliert.
 - [x] D3 **Person zuerst, Studio als Zweites.** Briefe sind mit „David Mora, Product & Digital Designer“ unterschrieben, Studio-Zeile „d-vision“. Absenderadresse = die Impressum-Adresse des Studios (in `config.json` eintragen). ⚠ d-vision.design löst heute nicht auf, daher tragen die Briefe die Befund-Seiten-URL auf Vercel + Davids Telefon, bis die Domain live ist.
 - [x] D4 **Batch 1 = S1 Beratung + S4 Immobilien in den Bezirken 1–9, 18, 19.** Batch 2 = S2 Gesundheit, dieselben Bezirke. S3/S6 erst, wenn der Brief eine gemessene Antwortquote hat.
-- [x] D5 **Rollenprofil Hilfskraft:** 8 h/Woche, Start sobald das Batch-1-Material existiert; Bezahlung = Stundensatz + 10 % der Erstprojekt-Rechnung bei gewonnenen Aufträgen. Name noch offen → in INBOX und `config.json` eintragen.
+- [x] D5 **Outreach-Person = Zeraq Popal** (bestätigt 2026-09-08; in `config.json`). Rollenprofil: 8 h/Woche, Start sobald das Batch-1-Material existiert; Bezahlung = Stundensatz + 10 % der Erstprojekt-Rechnung bei gewonnenen Aufträgen. Erste Verkaufsmappe: `data/PITCH-5.md`.
 - [x] D6 **Dieselbe rechnungslegende Einheit wie bei Loutati** (Veronika Didorenko, Kleinunternehmer, 0 % USt), bis die 12-Monats-Prognose die österreichische Kleinunternehmergrenze überschreitet (55.000 € netto, Regel 2025); dann vor dem nächsten Angebot zur USt registrieren. Das Kennzahlen-Blatt führt die laufende Summe.
 - [x] D7 **Befund-Seiten = statisches Vercel-Projekt** `befund` (noindex, `/b/<slug>`), erzeugt von `tools/befund_pages.py`; Alias auf d-vision.design/befund, sobald die Domain registriert und gepointet ist.
 
@@ -74,6 +74,7 @@ Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachi
 - [ ] T5-4 Kennzahlen-Blatt (gesendet / geantwortet / Gespräche / Angebote / gewonnen) je Batch und Segment
 
 ## Session-Log
+- 2026-09-08 — Outreach-Person bestätigt: **Zeraq Popal** (D5 geschlossen, `config.json` befüllt). Erste Verkaufsmappe gebaut: `data/PITCH-5.md` — 3 Tier-A- + 2 Tier-B-Betriebe mit Aufhänger, Beweis im Termin, Hauptangebot + Upsell, erwartetem Einwand und Kanal. `.gitignore` für `data/` von Sperr- auf Erlaubnisliste umgestellt, damit keine künftige Datendatei ins öffentliche Repo rutschen kann.
 - 2026-09-06 — **Lead-Prüfung ([TIERING.de.md](TIERING.de.md)).** Alle 120 Batch-1-Kandidaten live nachgeprüft → A 5 · B 28 · C 52 · D 26 · X 9. Gefunden: 3 Leads fälschlich aussortiert, weil die Schließungserkennung *Insolvenz*/*Liquidation* (Leistungen von Anwälten) als Todesanzeige las; 3 „keine Website“-Briefe, die falsch gewesen wären (allmermacke.at, naske.at, rpck.com); 9 Institutionen/Konzerne/Franchises; 26 gesunde Büros aus der Serie genommen. Die ehrlich druckbare Serie ist jetzt **22 Briefe**, nicht 67. Tier As „kein mobiles Layout“ auf den echten Seiten bestätigt.
 - 2026-09-03 — Repo **als `holemym/akquise`** öffentlich gemacht, ohne Daten: die 5 Dateien mit Kontaktdaten wurden aus der Versionierung genommen und die Historie auf einen Commit zurückgesetzt. Das alte `akquise-vault` ließ sich nicht sicher umstellen (seine Commits vor dem Rewrite blieben trotz Force-Push per SHA abrufbar), daher wurde es wieder auf privat gesetzt und ein sauberes Repo angelegt. ⚠ David: `akquise-vault` in den GitHub-Einstellungen löschen (das API-Token hat keine Delete-Berechtigung).
 - 2026-09-02 (nachts) — Vault als privates GitHub-Repo `holemym/akquise-vault` veröffentlicht (45 Dateien, EN/DE-Zwillinge + Tools + Shortlist/CRM). README-Zwillinge mit der Obsidian-Einrichtung ergänzt. Erzeugte Artefakte über `.gitignore` ausgeschlossen. Offen: Outreach-Person als Mitarbeiter einladen.

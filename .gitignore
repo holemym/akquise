@@ -28,11 +28,9 @@ Thumbs.db
 
 # --- Third-party personal data: NEVER in a public repo ---
 # Business contact details and Impressum names of real people (GDPR).
-# Shared with the outreach person directly, or via a separate private repo.
-data/prospects.csv
-data/prospects_scored.csv
-data/SHORTLIST.md
-data/befund_urls.csv
-data/letters/BATCH.md
-data/validated.csv
-data/TIERS.md
+# Allowlist, not blocklist: everything under data/ is ignored by default, so a new
+# data file can never leak by someone forgetting to add a rule. Shared with the
+# outreach person directly, or via a separate private repo.
+data/*
+!data/STATS.md
+!data/README.md
