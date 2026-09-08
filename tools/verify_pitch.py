@@ -23,7 +23,7 @@ with sync_playwright() as pw:
             act = pg.evaluate("document.querySelectorAll('.slide.is-active').length")
             if act != 1: errors.append(f"{w}: slide {i} active count {act}")
             if i in want:
-                pg.wait_for_timeout(700); pg.screenshot(path=str(out / f"s{i:02d}-{w}.png"))
+                pg.wait_for_timeout(2200); pg.screenshot(path=str(out / f"s{i:02d}-{w}.png"))
         # text clipped out of the deck? check every active slide's content box bottom vs deck height
         clip = pg.evaluate("""(()=>{const r=[];document.querySelectorAll('.slide').forEach((s,k)=>{s.classList.add('is-active');const els=[...s.querySelectorAll('*')].filter(e=>e.getClientRects().length);const deck=document.getElementById('deck').getBoundingClientRect();const over=els.filter(e=>{const b=e.getBoundingClientRect();return b.bottom>deck.bottom+2||b.right>deck.right+2}).length;if(over)r.push([k+1,over]);s.classList.remove('is-active')});return r})()""")
         report[f"clipped@{w}"] = clip
