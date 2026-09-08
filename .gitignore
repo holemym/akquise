@@ -34,3 +34,7 @@ Thumbs.db
 data/*
 !data/STATS.md
 !data/README.md
+
+# --- built internal dashboard (third-party data) + Vercel link files ---
+dash/
+.vercel/

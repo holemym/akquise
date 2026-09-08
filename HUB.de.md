@@ -69,12 +69,14 @@ Jedes Dokument existiert zweimal: `X.md` (EN) ↔ `X.de.md` (DE); deutschsprachi
 - [ ] T4-3 Unter der Studio-Domain veröffentlichen, noindex, kurze QR-URLs
 
 ### T5 Outreach-Betrieb
+- [x] T5-5 Internes Dashboard (2026-09-08): `tools/dashboard.py` → `dash/` (nicht in git) → Vercel-Projekt `akquise-dash` (Team dvisionh), noindex + robots gesperrt, unter einem nicht erratbaren Pfad aus `data/leads/_dash_secret.txt`. Übersicht + eine Seite je Betrieb (Kontakt, Angebot, Checkliste vor dem Kontakt mit lokalen Häkchen, Befunde mit Shots, Handy-Screens, Bewertung/Lighthouse, Markt, Wettbewerb, Prognose, Quick Wins, Einwände, offene Fragen, Deck, Dossier, Brief-PDF, Befund-Seite, Quellen) + Verkaufsmappe/Handbuch/Angebote/Tiers gerendert. Neu bauen + deployen: `python tools/dashboard.py && cd dash && npx vercel deploy --prod --yes --scope dvisionh`.
 - [x] T5-1 CRM = Spalten `status/kanal/kontaktiert_am/antwort/notiz` in `prospects_scored.csv` (Hilfskraft pflegt; Claude bewertet neu, ohne sie zu überschreiben) — merge-sicher seit 2026-09-02
 - [ ] T5-2 Batch 1: 50 Briefe, S1+S4 innere Bezirke — nach D1–D4
 - [ ] T5-3 Wöchentliches Review-Ritual: Antworten → Angebote innerhalb 48 h → ins Session-Log
 - [ ] T5-4 Kennzahlen-Blatt (gesendet / geantwortet / Gespräche / Angebote / gewonnen) je Batch und Segment
 
 ## Session-Log
+- 2026-09-08 (nachts) — Dashboard gebaut und deployt (T5-5). Null kaputte lokale Links, null Konsolenfehler, kein Overflow bei 1920/500.
 - 2026-09-08 (spät) — Fünf Lead-Pakete im Multi-Agent-Modus gebaut: `data/LEADS.md` (alle Links), je Lead `DOSSIER.md` + `lead.json` + `sources.md` + Screenshots + Wettbewerber-Shots + `pitch.html`. Korrekturen am Ende von `data/PITCH-5.md` protokolliert. Berechtigungsabfragen für dieses Projekt abgeschaltet (`.claude/settings.local.json`).
 - 2026-09-08 — Outreach-Person bestätigt: **Zeraq Popal** (D5 geschlossen, `config.json` befüllt). Erste Verkaufsmappe gebaut: `data/PITCH-5.md` — 3 Tier-A- + 2 Tier-B-Betriebe mit Aufhänger, Beweis im Termin, Hauptangebot + Upsell, erwartetem Einwand und Kanal. `.gitignore` für `data/` von Sperr- auf Erlaubnisliste umgestellt, damit keine künftige Datendatei ins öffentliche Repo rutschen kann.
 - 2026-09-06 — **Lead-Prüfung ([TIERING.de.md](TIERING.de.md)).** Alle 120 Batch-1-Kandidaten live nachgeprüft → A 5 · B 28 · C 52 · D 26 · X 9. Gefunden: 3 Leads fälschlich aussortiert, weil die Schließungserkennung *Insolvenz*/*Liquidation* (Leistungen von Anwälten) als Todesanzeige las; 3 „keine Website“-Briefe, die falsch gewesen wären (allmermacke.at, naske.at, rpck.com); 9 Institutionen/Konzerne/Franchises; 26 gesunde Büros aus der Serie genommen. Die ehrlich druckbare Serie ist jetzt **22 Briefe**, nicht 67. Tier As „kein mobiles Layout“ auf den echten Seiten bestätigt.
