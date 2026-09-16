@@ -38,9 +38,16 @@ FONT_CSS = ("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 
 PATH_RX = re.compile(r",?\s*(?:data/|\./)?[\w/\-]+\.(?:json|csv|md|py)")
+# Tool names are the machine, not the finding: a client slide says what was measured, never with what.
+MACHINE = [(re.compile(r"Lighthouse[- ]Messung", re.I), "Messung"),
+           (re.compile(r"Lighthouse[- ]Performance", re.I), "Tempo-Wert"),
+           (re.compile(r"Lighthouse(?: \d+)?,?", re.I), "Messung"),
+           (re.compile(r"\s*\((?:Largest Contentful Paint|LCP)\)", re.I), "")]
 def esc(s):
-    """Escape, and strip any internal file path — those must never appear on a client slide."""
-    return html.escape(PATH_RX.sub("", str(s or "")).replace("  ", " ").strip())
+    """Escape, and strip internal file paths and tool names — neither may appear on a client slide."""
+    s = PATH_RX.sub("", str(s or ""))
+    for rx, to in MACHINE: s = rx.sub(to, s)
+    return html.escape(s.replace("  ", " ").strip())
 
 def img_uri(path, maxw=1200, q=80):
     p = pathlib.Path(path)
@@ -463,7 +470,7 @@ def render(L, folder):
     lhb = ""
     if lh:
         lhb = f'''<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;border-top:1px solid var(--line);padding-top:22px">
-<div><div class="src">Lighthouse, Handy</div><div style="font:600 44px/1 var(--fd);margin-top:8px">{num(lh.get("performance",0))}<small style="font:400 18px var(--fd);color:var(--mute)"> / 100 Tempo</small></div></div>
+<div><div class="src">Messung am Handy</div><div style="font:600 44px/1 var(--fd);margin-top:8px">{num(lh.get("performance",0))}<small style="font:400 18px var(--fd);color:var(--mute)"> / 100 Tempo</small></div></div>
 <div><div class="src">SEO-Grundlagen</div><div style="font:600 44px/1 var(--fd);margin-top:8px">{num(lh.get("seo",0))}<small style="font:400 18px var(--fd);color:var(--mute)"> / 100</small></div></div></div>'''
     S.append(f'''<section class="slide"><div class="eyebrow">Bewertung · sechs Bereiche</div>
 <div class="grow" style="display:grid;grid-template-columns:1fr 330px;gap:64px;align-items:start">
