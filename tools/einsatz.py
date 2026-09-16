@@ -72,11 +72,16 @@ EXTRA = """
 .shots img{width:100%;border:1px solid #ddd;border-radius:3.5mm;display:block}
 .shots figcaption{font-size:7.5pt;color:#6b6b6b;margin-top:1.5mm}
 .cols.two{grid-template-columns:1fr 54mm}
+.top span{white-space:nowrap}
+.top{margin-bottom:7mm}.addr{margin-bottom:5mm}.date{margin-bottom:4mm}
+.ret{font-size:7.5pt;color:#6b6b6b;margin-bottom:2mm;text-decoration:underline;text-decoration-color:#bbb;text-underline-offset:1mm}
 """
 
 def letter(slug, L):
     sender_addr = [x for x in CFG["address_lines"] if not x.startswith("⚠")]
-    top_right = " · ".join(sender_addr + [CFG["phone"], CFG["email"]])
+    top_right = " · ".join([CFG["phone"], CFG["email"]])
+    # return address sits above the recipient, where a window envelope shows it
+    ret = " · ".join([CFG["sender_name"]] + sender_addr)
     qr = segno.make(L["qr"], error="m").svg_data_uri(scale=6, border=0, dark="#161616")
     two = len(L["shots"]) > 1
     figs = "".join(f'<figure><img src="{img(p, crop=1.8 if two else None)}" alt=""><figcaption>{html.escape(c)}</figcaption></figure>' for p, c in L["shots"])
@@ -84,7 +89,7 @@ def letter(slug, L):
     body = "".join(f"<p>{b}</p>" for b in L["body"])
     return f"""<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Brief {slug}</title><style>{CSS}{EXTRA}</style></head><body><div class="sheet">
 <div class="top"><span><b>{CFG['sender_name']}</b> · {CFG['sender_role']} · {CFG['studio']}</span><span>{top_right}</span></div>
-<div class="addr">{html.escape(chr(10).join(L['addr']))}</div>
+<div class="ret">{html.escape(ret)}</div><div class="addr">{html.escape(chr(10).join(L['addr']))}</div>
 <div class="date">Wien, {time.strftime('%d.%m.%Y')}</div>
 <h1>{html.escape(L['h1'])}</h1>
 <p>{html.escape(L['anrede'])}</p>

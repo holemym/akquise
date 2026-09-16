@@ -31,7 +31,7 @@ DATE = time.strftime("%d.%m.%Y")
 
 def esc(s): return html.escape(str(s or ""))
 MDMAP = {"OFFERS.md": "angebote.html", "OFFERS.de.md": "angebote.html", "HANDBUCH.md": "handbuch.html", "HANDBUCH.en.md": "handbuch.html",
-         "PITCH-5.md": "verkaufsmappe.html", "TIERS.md": "tiers.html", "LEADS.md": "leads.html", "EINSATZ-2.md": "einsatz.html"}
+         "PITCH-5.md": "verkaufsmappe.html", "TIERS.md": "tiers.html", "LEADS.md": "leads.html"}
 REPO = "https://github.com/holemym/akquise/blob/main/"
 def md(text):
     # bare URLs become links; python-markdown only links <url> autolinks
@@ -95,7 +95,7 @@ const l=c.closest('label');l.classList.toggle('done',c.checked);c.addEventListen
 def page(title, body, nav_extra=""):
     return f"""<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
 <title>{esc(title)} · Akquise</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>{CSS}</style></head>
-<body><div class="top"><div class="in"><b>Akquise</b><a href="{ABS}/index.html">Übersicht</a><a href="{ABS}/einsatz.html"><b>Einsatz 2</b></a><a href="{ABS}/verkaufsmappe.html">Verkaufsmappe</a><a href="{ABS}/handbuch.html">Handbuch</a><a href="{ABS}/angebote.html">Angebote</a><a href="{ABS}/tiers.html">Tiers</a>{nav_extra}<span class="sp"></span><span style="color:var(--faint)">Stand {DATE} · intern</span></div></div>
+<body><div class="top"><div class="in"><b>Akquise</b><a href="{ABS}/index.html">Übersicht</a><a href="{ABS}/verkaufsmappe.html">Verkaufsmappe</a><a href="{ABS}/handbuch.html">Handbuch</a><a href="{ABS}/angebote.html">Angebote</a><a href="{ABS}/tiers.html">Tiers</a>{nav_extra}<span class="sp"></span><span style="color:var(--faint)">Stand {DATE} · intern</span></div></div>
 <div class="wrap">{body}</div><script>{JS}</script></body></html>"""
 
 def webp(src, dst, maxw=900):
@@ -169,23 +169,15 @@ def build():
         rows.append(f'<tr><td class="n">{i}</td><td><a href="{ABS}/{s}/index.html">{esc(L["name"])}</a><br><span class="hook">{esc(L["one_liner"])}</span></td><td>{esc(L["category_label"])}<br><span class="hook">{esc(L["district"])}</span></td><td><b>{esc(L["offer"]["lead"])}</b> {esc(L["offer"]["lead_price"])}<br><span class="hook">→ {esc(L["offer"].get("second",""))}</span></td><td><span class="chip">{esc(st.get(FIVE[s]["pid"], "neu"))}</span></td><td class="files"><a href="{ABS}/{s}/deck.html" class="sec">Deck</a><a href="{ABS}/{s}/dossier.html" class="sec">Dossier</a><a href="{ABS}/{s}/brief.pdf" class="sec {"" if has.get("brief.pdf") else "off"}">Brief</a></td></tr>')
     warn = [k for k, v in CFG.items() if isinstance(v, str) and v.startswith("⚠")] + [k for k, v in CFG.items() if isinstance(v, list) and any(str(x).startswith("⚠") for x in v)]
     wb = f'<div class="warn-box"><b>Noch offen in config.json, bevor Briefe rausgehen:</b> {esc(", ".join(warn))}. Dazu: Befund-Seiten deployen (QR-Ziel).</div>' if warn else ""
-    # the current run sits above the five: two clients, their letters and leave-behinds
-    (BASE / "einsatz").mkdir()
-    for p in (DATA / "einsatz").glob("*.pdf"): shutil.copy(p, BASE / "einsatz" / p.name)
-    E = f"{ABS}/einsatz"
-    run = f"""<h1>Einsatz 2<small>Kartbahn Wien und Notariat Lukanec · Briefe, Unterlagen zum Dalassen, Gesprächsleitfaden</small></h1>
-<div class="row" style="margin-top:22px"><div class="card"><h3>In &amp; Outdoor Kartbahn Wien</h3><p class="note" style="margin-top:4px">1220 Wien · Felix Sereinig · Website fertig gebaut · 4.600 – 6.900 €</p>
-<div class="files" style="margin-top:14px"><a href="{E}/kartbahn-brief.pdf">Brief</a><a href="{E}/kartbahn-kurzfassung.pdf">Kurzfassung</a><a href="https://kartbahn-wien.vercel.app" class="sec" rel="noopener">Neue Website ↗</a><a href="https://kartbahn-audit.vercel.app" class="sec" rel="noopener">Kunden-Link ↗</a><a href="https://www.kartbahn-wien.at" class="sec" rel="noopener">Seite heute ↗</a></div></div>
-<div class="card"><h3>Notariat Lukanec</h3><p class="note" style="margin-top:4px">1020 Wien · Mag. Sigrid Lukanec · Google-Sichtbarkeit · 690 – 1.290 €</p>
-<div class="files" style="margin-top:14px"><a href="{E}/lukanec-brief.pdf">Brief</a><a href="{E}/lukanec-auswertung.pdf">Auswertung</a><a href="{ABS}/lukanec/index.html" class="sec">Lead-Seite</a><a href="https://lukanec-befund.vercel.app" class="sec" rel="noopener">Kunden-Link ↗</a><a href="https://www.notar-lukanec.at" class="sec" rel="noopener">Seite heute ↗</a></div></div></div>
-<div class="files" style="margin-top:16px"><a href="{ABS}/einsatz.html">Leitfaden für beide öffnen →</a></div>"""
-    body = run + f"""<h1 style="margin-top:56px">Die ersten fünf<small>Verkaufsmappe, Dossiers, Decks und Belege je Betrieb · Reihenfolge = Kontaktreihenfolge</small></h1>
+    # the two-client run for Zeraq lives on its own site (tools/einsatz_site.py); only a pointer here
+    run = '<div class="card"><h3>Einsatz Kartbahn Wien + Notariat Lukanec</h3><p class="note" style="margin-top:4px">Eigene Seite, getrennt von diesem Dashboard: einsatz-zeraq.vercel.app (Pfad in data/einsatz/_secret.txt)</p></div>'
+    body = run + f"""<h1 style="margin-top:40px">Die ersten fünf<small>Verkaufsmappe, Dossiers, Decks und Belege je Betrieb · Reihenfolge = Kontaktreihenfolge</small></h1>
 <div style="margin-top:18px">{wb}</div>
 <div class="tw" style="margin-top:24px"><table class="ov"><tr><th></th><th>Betrieb</th><th>Kategorie</th><th>Angebot</th><th>Status</th><th>Dateien</th></tr>{''.join(rows)}</table></div>
 <h2>Regeln, kurz</h2><div class="card"><ol style="padding-left:18px"><li>Jeden Befund selbst am Handy prüfen; stimmt er nicht, streichen.</li><li>Brief, Vorbeigehen, einzelne LinkedIn-Notiz. Kein Kaltanruf, keine Kalt-E-Mail, kein Kontaktformular (§ 174 TKG).</li><li>Preisspannen nennen, nie Fixpreise. Ziel jedes Kontakts: 20 Minuten mit David.</li><li>Alles, was zurückkommt, ins CRM (`status/kanal/kontaktiert_am/antwort/notiz`) und in INBOX.</li></ol></div>
 <h2>Dokumente</h2><div class="files"><a href="{ABS}/verkaufsmappe.html">Verkaufsmappe (PITCH-5)</a><a href="{ABS}/handbuch.html">Handbuch</a><a href="{ABS}/angebote.html">Angebote v1</a><a href="{ABS}/tiers.html">Tiers A–X</a><a href="{ABS}/leads.html" class="sec">Link-Index</a></div>"""
     (BASE / "index.html").write_text(page("Übersicht", body), encoding="utf-8")
-    for name, src in (("verkaufsmappe", DATA / "PITCH-5.md"), ("handbuch", ROOT / "HANDBUCH.md"), ("angebote", ROOT / "OFFERS.de.md"), ("tiers", DATA / "TIERS.md"), ("leads", DATA / "LEADS.md"), ("einsatz", DATA / "EINSATZ-2.md")):
+    for name, src in (("verkaufsmappe", DATA / "PITCH-5.md"), ("handbuch", ROOT / "HANDBUCH.md"), ("angebote", ROOT / "OFFERS.de.md"), ("tiers", DATA / "TIERS.md"), ("leads", DATA / "LEADS.md")):
         if src.exists():
             h = md(src.read_text(encoding="utf-8"))
             (BASE / f"{name}.html").write_text(page(name.capitalize(), f'<div class="prose">{h}</div>'), encoding="utf-8")
